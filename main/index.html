@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ITLGS - Tea Grading</title>
+</head>
+<body style="text-align:center; font-family:Arial;">
+
+<h2>🍃 Intelligent Tea Leaf Grading System</h2>
+
+<video id="video" width="300" height="200" autoplay></video><br><br>
+<button onclick="capture()">Capture & Analyze</button>
+
+<h3 id="result"></h3>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+const video = document.getElementById('video');
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+});
+
+function capture() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    context.drawImage(video, 0, 0);
+
+    canvas.toBlob(async function(blob) {
+
+        let formData = new FormData();
+        formData.append("image", blob, "frame.jpg");
+
+        let response = await fetch("/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        let data = await response.json();
+
+        document.getElementById("result").innerHTML =
+            "🌿 Grade: " + data.grade +
+            "<br>PN: " + data.PN.toFixed(2) + "%" +
+            "<br>SB: " + data.sb +
+            " | 1L: " + data.l1 +
+            " | 2L: " + data.l2;
+    });
+}
+</script>
+
+</body>
+</html>
