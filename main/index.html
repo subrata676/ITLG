@@ -394,26 +394,36 @@
     // START CAMERA
     // -----------------------------------
 
-    async function startCamera(){
+async function startCamera(){
 
-        try{
+    try{
 
-            stream = await navigator.mediaDevices.getUserMedia({
-                video:true,
-                audio:false
-            });
+        stream = await navigator.mediaDevices.getUserMedia({
 
-            video.srcObject = stream;
+            video:{
 
-            statusBox.innerHTML = "📷 Camera Started";
+                facingMode:{
+                    ideal:"environment"
+                },
 
-        }catch(error){
+                width:{ ideal:1280 },
+                height:{ ideal:720 }
+            },
 
-            console.error(error);
+            audio:false
+        });
 
-            statusBox.innerHTML = "❌ Camera Access Denied";
-        }
+        video.srcObject = stream;
+
+        statusBox.innerHTML = "📷 Back Camera Started";
+
+    }catch(error){
+
+        console.error(error);
+
+        statusBox.innerHTML = "❌ Camera Access Denied";
     }
+}
 
     // -----------------------------------
     // ANALYZE IMAGE
